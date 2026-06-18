@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404: Myth Not Found</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Figtree:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g:#1D5C41;--gL:#E8F5EE;--gM:#A8D8BE;
+  --rust:#8B2E1A;--rL:#FAF0EC;--rM:#E8B0A0;
+  --amber:#854F0B;--amberL:#FEF4E0;--amberM:#EFB84A;
+  --ink:#1A1916;--mid:#5A544C;--faint:#9C968E;
+  --surface:#FFFFFF;--bg2:#F6F4EF;--rule:rgba(0,0,0,0.09);
+  --r:14px;--mono:'DM Mono',monospace;--sans:'Figtree',sans-serif;
+}
+body{font-family:var(--sans);background:#F0EDE8;color:var(--ink);-webkit-font-smoothing:antialiased;padding:24px 20px 60px;min-height:100vh}
+.dash{max-width:960px;margin:0 auto}
+
+.masthead{padding:0 0 20px;margin-bottom:22px;border-bottom:1px solid var(--rule)}
+.ey{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--rust);margin-bottom:10px}
+.masthead h1{font-size:clamp(24px,4vw,36px);font-weight:500;line-height:1.15;color:var(--ink);margin-bottom:6px}
+.masthead h1 em{color:var(--rust);font-style:normal}
+.masthead-sub{font-size:13px;color:var(--mid)}
+
+.sections{display:flex;flex-direction:column;gap:10px}
+.row{display:flex;gap:10px;align-items:stretch}
+.col{display:flex;flex-direction:column;gap:10px}
+
+.card{flex:1;background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:18px 20px;display:flex;flex-direction:column;transition:border-color .3s}
+.card.fill-g{background:var(--gL);border-color:var(--gM)}
+
+.card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:10px}
+.lbl{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);line-height:1.6}
+.lbl.g{color:#0F6E56}.lbl.r{color:var(--rust)}.lbl.a{color:var(--amber)}
+
+.icon-badge{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transform-origin:center}
+.icon-badge.g{background:var(--gL);color:#0F6E56}
+.icon-badge.r{background:var(--rL);color:var(--rust)}
+.icon-badge.a{background:var(--amberL);color:var(--amber)}
+.icon-badge.n{background:var(--bg2);color:var(--mid)}
+
+.hero{font-size:38px;font-weight:500;line-height:1;margin-bottom:8px;display:inline-block;transform-origin:left center}
+.hero.g{color:var(--g)}.hero.r{color:var(--rust)}.hero.a{color:var(--amber)}
+.hero-cap{font-size:11.5px;color:var(--mid);line-height:1.6}
+
+.mid-num{font-size:30px;font-weight:500;line-height:1;display:inline-block;transform-origin:left center;margin-bottom:6px}
+.mid-num.g{color:var(--g)}
+
+.sm{font-size:11px;color:var(--mid);line-height:1.5}
+.mono{font-family:var(--mono)}
+
+.pill{display:inline-flex;align-items:center;font-family:var(--mono);font-size:9px;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:20px}
+.pill.g{background:var(--gL);color:#0F6E56;border:1px solid var(--gM)}
+.pill.r{background:var(--rL);color:var(--rust);border:1px solid var(--rM)}
+.pill.a{background:var(--amberL);color:var(--amber);border:1px solid var(--amberM)}
+
+.brow{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.brow:last-child{margin-bottom:0}
+.blbl{font-size:11px;color:var(--mid);white-space:nowrap;min-width:84px}
+.btrack{flex:1;height:6px;background:var(--bg2);border-radius:3px;overflow:hidden}
+.bfill{height:100%;border-radius:3px;width:0;transform-origin:center}
+.bval{font-family:var(--mono);font-size:10px;min-width:30px;text-align:right}
+.bfill.g{background:var(--g)}.bval.g{color:var(--g)}
+.bfill.r{background:var(--rust)}.bval.r{color:var(--rust)}
+.bfill.a{background:#BA7517}.bval.a{color:var(--amber)}
+
+.dotgrid{display:grid;grid-template-columns:repeat(10,9px);grid-template-rows:repeat(10,9px);gap:2px}
+.dot{border-radius:50%}
+
+.role-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--rule)}
+.role-row:last-child{border-bottom:none}
+.role-name{font-size:11px;color:var(--mid);min-width:100px}
+.role-chips{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.chip{font-size:10px;padding:3px 8px;border-radius:10px;border:1px solid var(--rule);color:var(--mid);background:var(--bg2);transform-origin:center}
+.chip.g{background:var(--gL);color:#0F6E56;border-color:var(--gM)}
+.chip.r{background:var(--rL);color:var(--rust);border-color:var(--rM)}
+.chip.a{background:var(--amberL);color:var(--amber);border-color:var(--amberM)}
+
+.flow{display:flex;gap:10px;flex:1;align-items:center}
+.flow-step{flex:1;display:flex;gap:10px;align-items:flex-start;padding:12px 14px;background:var(--rL);border:1px solid var(--rM);border-radius:9px}
+.flow-num{font-family:var(--mono);font-size:10px;font-weight:500;color:#fff;background:var(--rust);width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.flow-text{font-size:11.5px;color:var(--rust);line-height:1.5}
+.flow-arrow{display:flex;align-items:center;color:var(--rust);font-size:16px;flex-shrink:0}
+
+.stat4{display:grid;grid-template-columns:1fr 1fr;gap:18px 20px;flex:1;align-content:center}
+.stat4-num{font-size:25px;font-weight:500;line-height:1;display:inline-block;transform-origin:left center}
+.stat4-num.g{color:var(--g)}
+.stat4-cap{font-size:11px;color:var(--mid);line-height:1.5;margin-top:4px}
+.stat4-src{font-family:var(--mono);font-size:8.5px;color:var(--faint);margin-top:5px}
+
+.sim-track{height:9px;background:var(--bg2);border-radius:5px;overflow:hidden;margin-top:5px}
+.sim-fill{height:100%;border-radius:5px;transition:width .4s ease}
+
+.amp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;flex:1;align-items:center}
+.amp-block{display:flex;flex-direction:column;gap:6px}
+.amp-num{font-size:24px;font-weight:500;line-height:1;display:inline-block;transform-origin:left center}
+.amp-lbl{font-size:10.5px;color:var(--mid);line-height:1.45}
+
+#celebrate-overlay{position:fixed;inset:0;background:linear-gradient(135deg,#1D5C41,#2D8A65);z-index:1000;clip-path:circle(0% at 50% 50%);display:flex;align-items:center;justify-content:center;pointer-events:none}
+#celebrate-content{opacity:0;transform:scale(.7);text-align:center;color:#fff;padding:20px}
+.celebrate-title{font-size:40px;font-weight:500;margin-top:14px}
+.celebrate-sub{font-size:13px;opacity:.85;max-width:380px;margin:10px auto 0;line-height:1.65}
+#celebrate-close{position:absolute;top:24px;right:28px;background:rgba(255,255,255,.15);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:20px;cursor:pointer;line-height:1}
+#celebrate-close-2{margin-top:22px;background:#fff;color:var(--g);border:none;padding:11px 24px;border-radius:24px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+.confetti{position:absolute;width:10px;height:10px;border-radius:2px;left:50%;top:42%}
+
+#consensus-btn{background:var(--g);color:#fff;border:none;padding:13px 28px;border-radius:28px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+
+@media (max-width:760px){
+  .row{flex-direction:column}
+  .col{flex:none !important;width:100%}
+  .flow{flex-direction:column;align-items:stretch}
+  .amp-grid{grid-template-columns:repeat(2,1fr);gap:16px 14px}
+  .stat4{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<div class="dash">
+
+<div class="masthead">
+  <div class="ey">Evidence-based workforce report &middot; 200+ sources &middot; June 2026</div>
+  <h1>404: Myth <em>Not Found</em></h1>
+  <div class="masthead-sub">Five questions, in order. The "boomers can't adapt" myth doesn't survive any of them.</div>
+</div>
+
+<div class="sections">
+
+<!-- ============ Q · ORIGIN — bias, not biology ============ -->
+<div class="row section">
+  <div class="col" style="flex:3">
+    <div class="row">
+      <div class="card">
+        <div class="card-head"><div class="lbl r">myth origin year</div><div class="icon-badge r">
+          <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3l7 13H3z"/><path d="M10 8v3"/><circle cx="10" cy="13.5" r="0.6" fill="currentColor" stroke="none"/></svg>
+        </div></div>
+        <div class="hero r">2001</div>
+        <div class="hero-cap">Coined by a marketing consultant. Never empirically tested.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="lbl g">GenAI adoption, 50+</div><div class="icon-badge g">
+          <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13l4.5-4.5L11 12l6-6"/><path d="M13 6h4v4"/></svg>
+        </div></div>
+        <div class="hero g">+233%</div>
+        <div class="hero-cap">9% &rarr; 18% &rarr; 30% across 2023&ndash;2025 &middot; AARP</div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="lbl r">cost of age discrimination</div><div class="icon-badge r">
+          <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><path d="M10 6.5v4"/><circle cx="10" cy="13.5" r="0.6" fill="currentColor" stroke="none"/></svg>
+        </div></div>
+        <div class="hero r">$850B</div>
+        <div class="hero-cap">Annual US cost &middot; projected $4T by 2050 &middot; AARP 2024</div>
+      </div>
+    </div>
+
+    <div class="card" id="card-bias">
+      <div class="card-head"><div class="lbl r">how the bias becomes self-fulfilling</div><div class="icon-badge r">
+        <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 5a6.5 6.5 0 1 0 1.5 7"/><path d="M17.5 2v4h-4"/></svg>
+      </div></div>
+      <div class="flow">
+        <div class="flow-step"><div class="flow-num">1</div><div class="flow-text">Excluded from rollout &mdash; "they won't get it"</div></div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-step"><div class="flow-num">2</div><div class="flow-text">No access &rarr; no practice &rarr; falls behind</div></div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-step"><div class="flow-num">3</div><div class="flow-text">"See? Couldn't adapt." Bias confirmed.</div></div>
+      </div>
+      <div class="mono" style="font-size:8.5px;color:var(--faint);margin-top:10px">The Gerontologist 2023 &middot; 71.7% of design studies excluded older adults</div>
+    </div>
+  </div>
+
+  <div class="card" id="card-willing" style="flex:1">
+    <div class="card-head"><div class="lbl">willing to upskill</div><div class="icon-badge g">
+      <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="2.6"/><circle cx="14" cy="8" r="2.2"/><path d="M2.5 17c0-3 2-5 4.5-5s4.5 2 4.5 5"/><path d="M12 17c0-2.3 1.3-4 3.5-4s3.5 1.5 3.5 4"/></svg>
+    </div></div>
+    <div class="mid-num g">94%</div>
+    <div class="hero-cap" style="margin-bottom:12px">of older workers, when their employer actually asks</div>
+    <div style="flex:1;display:flex;align-items:center;justify-content:center">
+      <div class="dotgrid" id="dot-grid"></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+      <span style="display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--mid)"><span style="width:8px;height:8px;border-radius:50%;background:var(--g);display:inline-block"></span>Willing 94</span>
+      <span style="display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--mid)"><span style="width:8px;height:8px;border-radius:50%;background:#D3D1C7;display:inline-block"></span>Not 6</span>
+    </div>
+    <div class="mono" style="font-size:8.5px;color:var(--faint);margin-top:8px">AARP / SHRM Foundation 2025</div>
+  </div>
+</div>
+
+<!-- ============ Q · RELEVANCE — shallow & achievable ============ -->
+<div class="row section">
+  <div class="card">
+    <div class="card-head"><div class="lbl a">what tech do senior roles actually need?</div><div class="icon-badge a">
+      <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2 17 6 10 10 3 6z"/><path d="M3 10l7 4 7-4"/><path d="M3 14l7 4 7-4"/></svg>
+    </div></div>
+    <div class="sm" style="margin-bottom:8px;color:var(--faint)">WEF FoJ 2025 + LinkedIn role taxonomy</div>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+      <div class="role-row"><span class="role-name">C-suite / VP</span><div class="role-chips"><span class="chip g">AI dashboards</span><span class="chip g">Decision tools</span><span class="chip g">Comms AI</span></div></div>
+      <div class="role-row"><span class="role-name">Director / Senior</span><div class="role-chips"><span class="chip g">Analytics</span><span class="chip g">Workflow AI</span><span class="chip a">Project mgmt</span></div></div>
+      <div class="role-row"><span class="role-name">Mid-level Manager</span><div class="role-chips"><span class="chip a">Reporting</span><span class="chip a">Collaboration</span><span class="chip r">Some coding</span></div></div>
+      <div class="role-row"><span class="role-name">IC / Specialist</span><div class="role-chips"><span class="chip r">Technical build</span><span class="chip r">APIs</span><span class="chip r">Code review</span></div></div>
+      <div class="role-row"><span class="role-name">Junior / Entry</span><div class="role-chips"><span class="chip r">Full-stack</span><span class="chip r">ML pipelines</span><span class="chip r">Debugging</span></div></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <span class="pill g">Shallow</span>
+      <span class="pill a">Mixed</span>
+      <span class="pill r">Deep fluency</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="lbl g">WEF top 5 skills by 2030 &mdash; who holds them?</div><div class="icon-badge g">
+      <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2l2.4 5 5.5.8-4 3.9.9 5.5-4.8-2.6-4.8 2.6.9-5.5-4-3.9 5.5-.8z"/></svg>
+    </div></div>
+    <div>
+      <div class="role-row"><span class="role-name" style="font-size:11px">Analytical thinking</span><span class="pill g">Experience-built</span></div>
+      <div class="role-row"><span class="role-name" style="font-size:11px">Resilience &amp; agility</span><span class="pill g">Peaks with age</span></div>
+      <div class="role-row"><span class="role-name" style="font-size:11px">Leadership</span><span class="pill g">Tenure-built</span></div>
+      <div class="role-row"><span class="role-name" style="font-size:11px">Creative thinking</span><span class="pill a">Not age-tied</span></div>
+      <div class="role-row" style="border-bottom:none"><span class="role-name" style="font-size:11px">AI &amp; data literacy</span><span class="pill r">Fastest growing</span></div>
+    </div>
+    <div style="margin-top:10px;padding:10px 12px;background:var(--gL);border-radius:8px;border:1px solid var(--gM)">
+      <div style="font-size:11.5px;color:#1D5C41;line-height:1.6">4 of the top 5 future-critical skills are already strongest in <strong>experienced workers</strong></div>
+    </div>
+    <div style="margin-top:10px;font-size:11px;color:var(--mid);line-height:1.6">Tenure: <strong style="color:var(--g)">9.6yr</strong> (55+) vs <strong style="color:var(--rust)">2.7yr</strong> (under 35) &mdash; the training ROI window runs <strong>3.6&times; longer</strong></div>
+    <div class="mono" style="font-size:8.5px;color:var(--faint);margin-top:6px">WEF Future of Jobs 2025 &middot; BLS Employee Tenure 2024</div>
+  </div>
+</div>
+
+<!-- ============ Q · TRAINING — access denied, not declined ============ -->
+<div class="row section">
+  <div class="card">
+    <div class="card-head"><div class="lbl r">adult learning participation &mdash; OECD 2025</div><div class="icon-badge r">
+      <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l4.5 4.5L11 8l6 6"/><path d="M13 14h4v-4"/></svg>
+    </div></div>
+    <div id="train-bars" style="margin-bottom:10px"></div>
+    <div style="flex:1"></div>
+    <div style="padding:10px 12px;background:var(--rL);border-radius:8px;border:1px solid var(--rM)">
+      <div style="font-size:11.5px;color:var(--rust);line-height:1.6">Only <strong>12%</strong> of organisations offer upskilling specifically designed for workers 65+</div>
+      <div class="mono" style="font-size:8.5px;color:var(--rust);opacity:.7;margin-top:3px">SHRM Foundation 2025</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="lbl">train vs replace &mdash; simulator</div><div class="icon-badge n">
+      <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="2" x2="10" y2="17"/><line x1="3" y1="6" x2="17" y2="6"/><circle cx="5.5" cy="10.5" r="2.8"/><circle cx="14.5" cy="10.5" r="2.8"/></svg>
+    </div></div>
+    <div class="hero-cap" style="margin-bottom:12px">Replacing a 55-year-old costs more than a decade of AI upskilling would.</div>
+    <div style="font-size:11px;color:var(--mid);margin-bottom:5px">Drag to set annual salary</div>
+    <input type="range" id="sal" min="40000" max="200000" step="5000" value="80000" style="width:100%;accent-color:#1D5C41" oninput="sim(this.value)">
+    <div class="mono" style="font-size:12px;color:var(--ink);margin:3px 0 12px" id="sal-disp">$80,000</div>
+    <div class="brow" style="flex-direction:column;align-items:stretch;gap:4px">
+      <div style="display:flex;justify-content:space-between"><span style="font-size:10px;color:var(--mid)">Cost to upskill</span><span class="mono" style="font-size:15px;font-weight:500;color:var(--g)" id="tcost">$3,520</span></div>
+      <div class="sim-track"><div class="sim-fill" style="background:var(--g)" id="tbar"></div></div>
+    </div>
+    <div class="brow" style="flex-direction:column;align-items:stretch;gap:4px;margin-top:8px">
+      <div style="display:flex;justify-content:space-between"><span style="font-size:10px;color:var(--mid)">Cost to replace</span><span class="mono" style="font-size:15px;font-weight:500;color:var(--rust)" id="rcost">$52,000</span></div>
+      <div class="sim-track"><div class="sim-fill" style="background:var(--rust);width:100%"></div></div>
+    </div>
+    <div style="flex:1"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--gL);border-radius:8px;border:1px solid var(--gM);margin-top:10px">
+      <div>
+        <div style="font-size:10px;color:#0F6E56;margin-bottom:1px">You save</div>
+        <div class="mono" style="font-size:18px;font-weight:500;color:var(--g)" id="saved">$48,480</div>
+      </div>
+      <span class="pill g" id="ratio">14.8x cheaper</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Q · SECTORS — parity when included ============ -->
+<div class="row section">
+  <div class="card">
+    <div class="card-head"><div class="lbl g">AI adoption by generation &mdash; MSFT WTI 2024</div><div class="icon-badge g">
+      <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="3" height="8" rx="0.5"/><rect x="8.5" y="5" width="3" height="12" rx="0.5"/><rect x="14" y="2" width="3" height="15" rx="0.5"/></svg>
+    </div></div>
+    <div style="position:relative;flex:1;min-height:130px">
+      <canvas id="genChart" role="img" aria-label="Bar chart: Gen Z 85%, Millennials 78%, Gen X 76%, Boomers 73% use AI at work">Gen Z 85%, Millennials 78%, Gen X 76%, Boomers 73%.</canvas>
+    </div>
+    <div style="margin-top:10px;padding:10px 12px;background:var(--gL);border-radius:8px;border:1px solid var(--gM)">
+      <div style="font-size:11.5px;color:#1D5C41;line-height:1.6">Not a cliff &mdash; a <strong>12-point gradient</strong> that narrows wherever access is equal</div>
+    </div>
+  </div>
+
+  <div class="card fill-g">
+    <div class="card-head"><div class="lbl g">the evidence, across every sector</div><div class="icon-badge g">
+      <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="6.5" height="6.5" rx="1"/><rect x="11" y="2.5" width="6.5" height="6.5" rx="1"/><rect x="2.5" y="11" width="6.5" height="6.5" rx="1"/><rect x="11" y="11" width="6.5" height="6.5" rx="1"/></svg>
+    </div></div>
+    <div class="stat4">
+      <div>
+        <div class="stat4-num g">100%</div>
+        <div class="stat4-cap">of surveyed health systems show AI documentation adoption activity</div>
+        <div class="stat4-src">Scottsdale Institute 2024</div>
+      </div>
+      <div>
+        <div class="stat4-num g">Top 25%</div>
+        <div class="stat4-cap">global rank of financial services in AI investment, senior staff included</div>
+        <div class="stat4-src">Deloitte State of AI 2026</div>
+      </div>
+      <div>
+        <div class="stat4-num g">90%</div>
+        <div class="stat4-cap">of adults 50+ own a smartphone, up from 55% in 2016</div>
+        <div class="stat4-src">AARP Tech Trends 2026</div>
+      </div>
+      <div>
+        <div class="stat4-num g">$94.5B</div>
+        <div class="stat4-cap">spent on tech by US adults 50+ in 2025 ($756/person)</div>
+        <div class="stat4-src">AARP Tech Trends 2026</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Q · AI ERA — experience is the multiplier ============ -->
+<div class="card section">
+  <div class="card-head"><div class="lbl g">AI amplifies expertise, not ignorance</div><div class="icon-badge g">
+    <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2 4 11h6l-1 7 7-9h-6z"/></svg>
+  </div></div>
+  <div class="amp-grid">
+    <div class="amp-block">
+      <div class="amp-num g">+40%</div>
+      <div class="amp-lbl">Domain experts + AI &mdash; output quality uplift</div>
+      <div class="btrack"><div class="bfill g" data-pct="80"></div></div>
+    </div>
+    <div class="amp-block">
+      <div class="amp-num a">+14%</div>
+      <div class="amp-lbl">Novices + AI &mdash; output quality uplift</div>
+      <div class="btrack"><div class="bfill a" data-pct="28"></div></div>
+    </div>
+    <div class="amp-block">
+      <div class="amp-num r">&minus;16%</div>
+      <div class="amp-lbl">Junior roles (22&ndash;25) &mdash; employment post-ChatGPT</div>
+      <div class="btrack"><div class="bfill r" data-pct="32"></div></div>
+    </div>
+    <div class="amp-block">
+      <div class="amp-num g">~0%</div>
+      <div class="amp-lbl">Senior roles &mdash; employment post-ChatGPT</div>
+      <div class="btrack"><div class="bfill g" data-pct="2"></div></div>
+    </div>
+  </div>
+  <div class="mono" style="font-size:8.5px;color:var(--faint);margin-top:10px">HBS/BCG 2023&ndash;25 &middot; Brynjolfsson / ADP payroll 2025</div>
+</div>
+
+<!-- ============ Verdict ============ -->
+<div class="card section" style="align-items:center;justify-content:center;text-align:center;gap:10px;padding:24px 20px">
+  <div class="icon-badge g" style="margin-bottom:2px">
+    <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><path d="M6.5 10.2l2.3 2.3 4.7-5"/></svg>
+  </div>
+  <div style="font-size:19px;font-weight:500;max-width:560px;line-height:1.5">Five questions, one direction &mdash; the evidence doesn't support the myth</div>
+  <div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:center;max-width:760px">
+    <span class="pill g">Origin: bias, not biology</span>
+    <span class="pill g">Relevance: shallow &amp; achievable</span>
+    <span class="pill g">Training: access denied, not declined</span>
+    <span class="pill g">Sectors: parity when included</span>
+    <span class="pill g">AI era: experience is the multiplier</span>
+  </div>
+  <button id="consensus-btn">Confirm: the myth is debunked &check;</button>
+</div>
+
+</div>
+
+<div style="font-family:var(--mono);font-size:9px;color:var(--faint);text-align:right;padding-top:16px;margin-top:8px;border-top:1px solid var(--rule)">
+  Sources: SHRM 2025 &middot; AARP 2025&ndash;26 &middot; OECD Employment Outlook 2025 &middot; WEF Future of Jobs 2025 &middot; Microsoft WTI 2024 &middot; HBS/BCG 2023&ndash;25 &middot; BLS 2024 &middot; Mercer &middot; Brynjolfsson/ADP 2025 &middot; Scottsdale Institute 2024 &middot; Deloitte 2026
+</div>
+
+</div>
+
+<div id="celebrate-overlay">
+  <button id="celebrate-close" aria-label="Close">&times;</button>
+  <div id="celebrate-content">
+    <svg width="120" height="120" viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="54" fill="none" stroke="#fff" stroke-width="3" opacity="0.35"/>
+      <path id="check-path" d="M34 62 L52 80 L88 40" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="90" stroke-dashoffset="90"/>
+    </svg>
+    <div class="celebrate-title">Myth: debunked</div>
+    <div class="celebrate-sub">94% willing to adapt. +233% GenAI adoption growth in two years. AI amplifies their expertise more than anyone else's. The evidence agrees with you.</div>
+    <button id="celebrate-close-2">Back to the data</button>
+  </div>
+  <div id="confetti-wrap"></div>
+</div>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+const dotGrid = document.getElementById('dot-grid');
+for(let i=0;i<100;i++){
+  const d=document.createElement('div');
+  d.className='dot';
+  d.style.background=i<94?'#1D5C41':'#D3D1C7';
+  dotGrid.appendChild(d);
+}
+
+const trainData=[
+  {l:'Age 25&ndash;29',v:61,t:'g'},
+  {l:'Age 30&ndash;44',v:52,t:'g'},
+  {l:'Age 45&ndash;54',v:41,t:'a'},
+  {l:'Age 55&ndash;59',v:39,t:'a'},
+  {l:'Age 60&ndash;65',v:31,t:'r'},
+];
+const tb=document.getElementById('train-bars');
+trainData.forEach(d=>{
+  tb.innerHTML+=`<div class="brow"><div class="blbl">${d.l}</div><div class="btrack"><div class="bfill ${d.t}" data-pct="${d.v}"></div></div><div class="bval ${d.t}">${d.v}%</div></div>`;
+});
+
+new Chart(document.getElementById('genChart'),{
+  type:'bar',
+  data:{
+    labels:['Gen Z','Millennials','Gen X','Boomers'],
+    datasets:[{
+      data:[85,78,76,73],
+      backgroundColor:['#B4B2A9','#888780','#3B6D11','#1D5C41'],
+      borderRadius:5,
+      borderWidth:0
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+'% use AI at work'}}},
+    scales:{
+      x:{grid:{display:false},ticks:{font:{size:11},color:'#888780'}},
+      y:{display:false,min:65,max:92}
+    },
+    animation:{duration:1200,easing:'easeOutQuart'}
+  }
+});
+
+function sim(v){
+  v=parseInt(v);
+  const t=Math.round(v*0.044);
+  const r=Math.round(v*0.65);
+  const s=r-t;
+  document.getElementById('sal-disp').textContent='$'+v.toLocaleString();
+  document.getElementById('tcost').textContent='$'+t.toLocaleString();
+  document.getElementById('rcost').textContent='$'+r.toLocaleString();
+  document.getElementById('saved').textContent='$'+s.toLocaleString();
+  document.getElementById('ratio').textContent=(r/t).toFixed(1)+'x cheaper';
+  gsap.to('#tbar',{width:Math.round((t/r)*100)+'%',duration:0.4,ease:'power2.out'});
+}
+sim(80000);
+
+function animBars(scope){
+  (scope||document).querySelectorAll('.bfill[data-pct]').forEach((el,i)=>{
+    gsap.to(el,{width:el.dataset.pct+'%',duration:1,delay:i*0.05,ease:'power2.out'});
+  });
+}
+
+gsap.utils.toArray('.section').forEach(sec=>{
+  const cards = sec.classList.contains('card') ? [sec] : [...sec.querySelectorAll('.card')];
+  gsap.from(cards,{opacity:0,y:24,duration:.6,stagger:.08,ease:'power2.out',
+    scrollTrigger:{trigger:sec,start:'top 88%'},
+    onComplete:()=>animBars(sec)
+  });
+});
+
+document.querySelectorAll('.card').forEach(card=>{
+  const icon=card.querySelector('.icon-badge');
+  card.addEventListener('mouseenter',()=>{
+    gsap.to(card,{y:-4,borderColor:'rgba(29,92,65,0.35)',duration:.3,ease:'power2.out'});
+    if(icon)gsap.to(icon,{rotate:12,scale:1.12,duration:.3,ease:'back.out(2)'});
+  });
+  card.addEventListener('mouseleave',()=>{
+    gsap.to(card,{y:0,borderColor:'',duration:.3,ease:'power2.out',clearProps:'borderColor'});
+    if(icon)gsap.to(icon,{rotate:0,scale:1,duration:.3});
+  });
+});
+
+document.querySelectorAll('.brow').forEach(row=>{
+  const fill=row.querySelector('.bfill');
+  if(!fill)return;
+  row.addEventListener('mouseenter',()=>gsap.to(fill,{scaleY:1.7,filter:'brightness(1.12)',duration:.25,ease:'power2.out'}));
+  row.addEventListener('mouseleave',()=>gsap.to(fill,{scaleY:1,filter:'brightness(1)',duration:.25}));
+});
+
+document.getElementById('card-willing').addEventListener('mouseenter',()=>{
+  gsap.to('.dot',{scale:1.35,stagger:{amount:.5,from:'random'},duration:.3,ease:'power2.out',yoyo:true,repeat:1});
+});
+
+document.querySelectorAll('.role-row').forEach(row=>{
+  const chips=row.querySelectorAll('.chip');
+  if(!chips.length)return;
+  row.addEventListener('mouseenter',()=>gsap.to(chips,{y:-3,scale:1.06,stagger:.04,duration:.2,ease:'back.out(2)'}));
+  row.addEventListener('mouseleave',()=>gsap.to(chips,{y:0,scale:1,duration:.2}));
+});
+
+document.getElementById('card-bias').addEventListener('mouseenter',()=>{
+  gsap.fromTo('.flow-step',{backgroundColor:'#FAF0EC'},{backgroundColor:'#F4C0B0',stagger:.12,duration:.2,yoyo:true,repeat:1});
+});
+
+document.querySelectorAll('.hero, .mid-num, .stat4-num, .amp-num').forEach(h=>{
+  const card=h.closest('.card');
+  card.addEventListener('mouseenter',()=>gsap.to(h,{scale:1.08,duration:.18,ease:'power1.out',yoyo:true,repeat:1}));
+});
+
+const colors=['#A8D8BE','#E8F5EE','#FEF4E0','#EFB84A','#FFFFFF','#3B6D11'];
+const confettiWrap=document.getElementById('confetti-wrap');
+for(let i=0;i<28;i++){
+  const c=document.createElement('div');
+  c.className='confetti';
+  c.style.background=colors[i%colors.length];
+  confettiWrap.appendChild(c);
+}
+
+const btn=document.getElementById('consensus-btn');
+const overlay=document.getElementById('celebrate-overlay');
+
+gsap.to(btn,{boxShadow:'0 0 0 10px rgba(29,92,65,0.12)',duration:1.3,repeat:-1,yoyo:true,ease:'sine.inOut'});
+
+function openCelebration(){
+  const r=btn.getBoundingClientRect();
+  const cx=r.left+r.width/2, cy=r.top+r.height/2;
+  overlay.style.pointerEvents='auto';
+  gsap.to(overlay,{clipPath:`circle(170% at ${cx}px ${cy}px)`,duration:0.9,ease:'power2.inOut'});
+  gsap.to('#celebrate-content',{opacity:1,scale:1,duration:0.6,delay:0.45,ease:'back.out(1.6)'});
+  gsap.fromTo('#check-path',{strokeDashoffset:90},{strokeDashoffset:0,duration:0.7,delay:0.6,ease:'power2.out'});
+  document.querySelectorAll('.confetti').forEach(c=>{
+    const x=(Math.random()-0.5)*window.innerWidth*0.8;
+    const y=(Math.random()-0.6)*window.innerHeight*0.7;
+    const rot=Math.random()*360;
+    gsap.set(c,{x:0,y:0,opacity:1,scale:0});
+    gsap.to(c,{x,y,rotation:rot,opacity:0,scale:1,duration:1.1+Math.random()*0.7,delay:0.55+Math.random()*0.35,ease:'power2.out'});
+  });
+}
+function closeCelebration(){
+  gsap.to('#celebrate-content',{opacity:0,scale:.7,duration:0.25});
+  gsap.to(overlay,{clipPath:'circle(0% at 50% 50%)',duration:0.55,delay:0.05,ease:'power2.inOut',onComplete:()=>{overlay.style.pointerEvents='none'}});
+}
+btn.addEventListener('click',openCelebration);
+document.getElementById('celebrate-close').addEventListener('click',closeCelebration);
+document.getElementById('celebrate-close-2').addEventListener('click',closeCelebration);
+</script>
+</body>
+</html>
